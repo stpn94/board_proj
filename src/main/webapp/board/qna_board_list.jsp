@@ -29,7 +29,7 @@
          <c:forEach var="board" items="${articleList }">
             <tr>
                <td>${board.board_num}</td>
-               <td>
+               <td style="text-align: left;">
                <%-- <c:if test="${list.board_re_seq!=0}">
 			 				<c:forEach begin="0" end="${list.board_re_seq}">
 			 					&nbsp;

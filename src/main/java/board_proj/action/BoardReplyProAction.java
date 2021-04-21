@@ -25,11 +25,13 @@ public class BoardReplyProAction implements Action {
 		article.setBoard_re_ref(Integer.parseInt(request.getParameter("BOARD_RE_REF")));
 		article.setBoard_re_lev(Integer.parseInt(request.getParameter("BOARD_RE_LEV")));
 		article.setBoard_re_seq(Integer.parseInt(request.getParameter("BOARD_RE_SEQ")));
+		System.out.println(article);
 		BoardReplyProService boardReplyProService = new BoardReplyProService();
 		boolean isReplySuccess = boardReplyProService.replyArticle(article);
 
 		if (isReplySuccess) {
 			forward = new ActionForward();
+//			forward = new ActionForward("boardList.do?page="+nowPage, true);
 			forward.setRedirect(true);
 			forward.setPath("boardList.do?page=" + nowPage);
 		} else {

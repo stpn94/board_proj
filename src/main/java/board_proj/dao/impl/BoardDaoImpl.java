@@ -137,6 +137,7 @@ public class BoardDaoImpl implements BoardDAO {
 		 * if(updateCount > 0){ commit(con); }
 		 */
 		replyUpdate(article);
+		
 		String sql = "insert into board (BOARD_NUM,BOARD_NAME,BOARD_PASS,BOARD_SUBJECT,"
 				+ "BOARD_CONTENT, BOARD_FILE,BOARD_RE_REF,BOARD_RE_LEV,BOARD_RE_SEQ,"
 				+ "BOARD_READCOUNT) values(?,?,?,?,?,?,?,?,?,?)";
@@ -153,16 +154,32 @@ public class BoardDaoImpl implements BoardDAO {
 			pstmt.setInt(8, article.getBoard_re_lev() + 1);
 			pstmt.setInt(9, article.getBoard_re_seq() + 1);
 			pstmt.setInt(10, article.getBoard_readcount());
-			return pstmt.executeUpdate();
-		} catch (SQLException ex) {
-			System.out.println("boardReply 에러 : " + ex);
+			int rs = pstmt.executeUpdate();
+			if (rs == 1) {
+				con.commit();
+				return rs;
+			}
+		} catch (SQLException e) {
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return 0;
 	}
 
-	private void replyUpdate(BoardDTO article) {
+	private void replyUpdate(BoardDTO article){
 		String sql = "update board set BOARD_RE_SEQ=BOARD_RE_SEQ+1 where BOARD_RE_REF=? and BOARD_RE_SEQ>? ";
 		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+			con.setAutoCommit(false);
 			pstmt.setInt(1, article.getBoard_re_ref());
 			pstmt.setInt(2, article.getBoard_re_seq());
 		} catch (SQLException e) {
