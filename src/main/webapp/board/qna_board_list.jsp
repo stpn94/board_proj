@@ -29,7 +29,15 @@
 			<c:forEach var="board" items="${articleList }">
 				<tr>
 					<td>${board.board_num}</td>
-					<td><a href = "boardDetail.do?board_num=${board.board_num }&page=${pageInfo.page}">${board.board_subject}</a></td>
+					<td id="subject">
+		 				<c:if test="${list.board_re_seq!=0}">
+			 				<c:forEach begin="0" end="${list.board_re_seq}">
+			 					&nbsp;
+			 				</c:forEach>
+			 				▶
+		 				</c:if>
+	 					<a href="boardDetail.do?board_num=${list.board_num }&page=${pageInfo.page}"> ${list.board_subject} </a>
+					</td>
 					<td>${board.board_name}</td>
 					<td>${board.board_date}</td>
 					<td>${board.board_readcount}</td>
