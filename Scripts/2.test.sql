@@ -48,3 +48,10 @@ delete
 select * from board b  where board_num = 25 and BOARD_PASS = '1234';
  
 select * from board b2  where BOARD_NUM = 37;
+
+-- 수정
+select *
+from board
+order by BOARD_RE_REF desc, board_re_seq;
+
+update board set BOARD_SUBJECT = 'aaa',Board_content='aaa' where board_num = 6;

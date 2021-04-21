@@ -87,13 +87,19 @@ public class BoardDAOTest {
 	}
 
 	@Test
-	public void testUpdateArticle() {
-		fail("Not yet implemented");
+	public void test08UpdateArticle() {
+		System.out.println();
+		int board_num=22;
+		BoardDTO board = dao.selectArticle(board_num);
+		int res = dao.updateArticle(board);
+		Assert.assertEquals(1, res);
+		
+		System.out.println("res>>"+res);
 	}
 
 	@Test
 	public void test08DeleteArticle() {
-		System.out.println("test07DeleteArticle()");
+		System.out.println("test09DeleteArticle()");
 		int board_num = dao.nextBoardNum() -1;
 		int res = dao.deleteArticle(board_num);
 		Assert.assertEquals(1, res);

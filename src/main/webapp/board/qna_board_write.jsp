@@ -5,7 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>MVC 게시판</title>
-<link rel="stylesheet" href="<%=request.getContextPath() %>/css/qna_board_write.css">
+<link rel="stylesheet" href="<%=request.getContextPath() %>/css/write.css">
 </head>
 <body>
 <!-- 게시판 등록 -->

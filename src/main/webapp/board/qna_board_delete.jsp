@@ -5,7 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>MVC게시판</title>
-<link rel = "stylesheet" href = "css/qna_board_delete.css">
+<link rel = "stylesheet" href = "css/delete.css">
 </head>
 <body>
 <section id = "passForm">

@@ -13,7 +13,10 @@ import board_proj.action.Action;
 import board_proj.action.BoardDeleteProAction;
 import board_proj.action.BoardDetailAction;
 import board_proj.action.BoardListAction;
+import board_proj.action.BoardModifyAction;
+import board_proj.action.BoardModifyProAction;
 import board_proj.action.BoardReplyFormAction;
+import board_proj.action.BoardReplyProAction;
 import board_proj.action.BoardWriteProAction;
 import board_proj.action.FileDownAction;
 import board_proj.dto.ActionForward;
@@ -21,33 +24,35 @@ import board_proj.dto.ActionForward;
 @WebServlet("*.do")
 public class BoardFrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		doProcess(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		doProcess(request, response);
 	}
 
-	private void doProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void doProcess(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 //		String RequestURI = request.getRequestURI();
 //		String contextPath = request.getContextPath();
 //		String command=RequestURI.substring(contextPath.length());   
 //		System.out.println(RequestURI + " >> " + contextPath + " >> " + command);
 
-		String command = request.getServletPath(); //3줄코드를 한번에 압축
+		String command = request.getServletPath(); // 3줄코드를 한번에 압축
 		System.out.println(command);
-		
+
 		ActionForward forward = null;
 		Action action = null;
-		
-		if(command.equals("/boardWriteForm.do")) {
+
+		if (command.equals("/boardWriteForm.do")) {
 //			request.getRequestDispatcher("/board/qna_board_write.jsp").forward(request, response);
 			forward = new ActionForward();
 			forward.setPath("/board/qna_board_write.jsp");
-		}else if(command.contentEquals("/boardWritePro.do")) {
+		} else if (command.contentEquals("/boardWritePro.do")) {
 			action = new BoardWriteProAction();
 			try {
 				forward = action.execute(request, response);
@@ -68,25 +73,18 @@ public class BoardFrontController extends HttpServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		} else if (command.equals("/boardReplyForm.do")) {
-			action = new BoardReplyFormAction();
-			try {
-				forward = action.execute(request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		} else if (command.equals("/boardDeleteForm.do")) {
-			//board_num=36&page=1
+			// board_num=36&page=1
 			String nowPage = request.getParameter("page");
 			request.setAttribute("page", nowPage);
-			
+
 			int board_num = Integer.parseInt(request.getParameter("board_num"));
 			request.setAttribute("board_num", board_num);
-			
+
 			forward = new ActionForward();
 			forward.setPath("/board/qna_board_delete.jsp");
 		} else if (command.equals("/boardDeletePro.do")) {
-			//boardDeletePro.do?board_num=37&page=1&Board_Pass=aaa
+			// boardDeletePro.do?board_num=37&page=1&Board_Pass=aaa
 			action = new BoardDeleteProAction();
 			try {
 				forward = action.execute(request, response);
@@ -100,18 +98,46 @@ public class BoardFrontController extends HttpServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-		
-		
-		
-		if(forward != null) {
-			if(forward.isRedirect()) {
+		} else if (command.equals("/boardModifyForm.do")) {
+			action = new BoardModifyAction();
+			try {
+				forward = action.execute(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if (command.equals("/boardModifyPro.do")) {
+			// boardDeletePro.do?board_num=37&page=1&Board_Pass=aaa
+			action = new BoardModifyProAction();
+			try {
+				forward = action.execute(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}else if (command.equals("/boardReplyForm.do")) {
+			action = new BoardReplyFormAction();
+			try {
+				forward = action.execute(request, response);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else if (command.equals("/boardReplyPro.do")) {
+			action = new BoardReplyProAction();
+			try {
+				forward = action.execute(request, response);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} 
+
+		if (forward != null) {
+			if (forward.isRedirect()) {
 				response.sendRedirect(forward.getPath());
 			} else {
 				request.getRequestDispatcher(forward.getPath()).forward(request, response);
 			}
 		}
-		
-	}
 
+	}
 }
