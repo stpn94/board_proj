@@ -10,7 +10,7 @@ import board_proj.service.BoardDetailService;
 public class BoardReplyFormAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) {
 
 		// board_view 에서 [답글]을 누르고 board_num와&page를 파라미터로 가지고 컨트롤러 거치고 여기왔다.
 

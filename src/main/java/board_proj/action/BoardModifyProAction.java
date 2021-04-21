@@ -19,13 +19,12 @@ import board_proj.service.BoardWriteService;
 public class BoardModifyProAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) {
 
 		int board_num = Integer.parseInt(request.getParameter("BOARD_NUM"));
 		String pass = request.getParameter("BOARD_PASS");
 		int page = Integer.parseInt(request.getParameter("page"));
 
-		BoardDTO article = new BoardDTO();
 		BoardModifyProService service = new BoardModifyProService();
 
 		boolean isModifySuccess = false;
@@ -35,34 +34,33 @@ public class BoardModifyProAction implements Action {
 
 		if (!isRightUser) {
 			response.setContentType("text/html;charset=UTF-8");
-			getMessage(response,"수정할 권한이 없습니다.");
+			SendMessage.sendMessage(response, "수정할 권한이 없습니다");
+			return forward;
 		} else {
+			BoardDTO article = new BoardDTO();
 			article.setBoard_num(board_num);
+			
 			article.setBoard_subject(request.getParameter("BOARD_SUBJECT"));
+			
 			article.setBoard_content(request.getParameter("BOARD_CONTENT"));
+			
 			isModifySuccess = service.modifyArticle(article);
 			
 			if (!isModifySuccess) {
-//				response.setContentType("text/html;charset=UTF-8");
-				getMessage(response,"수정할 권한이 없습니다.");
+				SendMessage.sendMessage(response, "수정 실패");
+				return forward;
 			} else {
 				forward = new ActionForward();
 				forward.setRedirect(true);
 				forward.setPath("boardDetail.do?board_num=" + article.getBoard_num()+"&page="+page);
+				
+				return forward;
 			}
 
 		}
 
-		return forward;
 
 	}
 
-	private void getMessage(HttpServletResponse response, String msg) throws IOException {
-		PrintWriter out = response.getWriter();
-		out.println("<script>");
-		out.println("alert('" + msg + "')");
-		out.println("history.back();");
-		out.println("</script>");
-	}
 
 }
