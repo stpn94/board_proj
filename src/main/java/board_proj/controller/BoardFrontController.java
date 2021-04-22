@@ -1,31 +1,58 @@
 package board_proj.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
-import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import board_proj.action.Action;
-import board_proj.action.BoardDeleteFormAction;
-import board_proj.action.BoardDeleteProAction;
-import board_proj.action.BoardDetailAction;
-import board_proj.action.BoardListAction;
-import board_proj.action.BoardModifyAction;
-import board_proj.action.BoardModifyProAction;
-import board_proj.action.BoardReplyFormAction;
-import board_proj.action.BoardReplyProAction;
-import board_proj.action.BoardWriteFormAction;
-import board_proj.action.BoardWriteProAction;
-import board_proj.action.FileDownAction;
 import board_proj.dto.ActionForward;
 
-@WebServlet("*.do")
+@WebServlet(urlPatterns = { "*.do" }, loadOnStartup = 1, // 무조건 처음 실행
+		initParams = { @WebInitParam(name = "configFile", value = "WEB-INF/commandAction.properties") }// 초기화를 넘겨주는
+																										// 매게변수}
+)
 public class BoardFrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	// hashmap생성
+	private Map<String, Action> actionMap = new HashMap<>();
+
+	// ↓이게 먼저 수행됨
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		// getInitParameter()
+		System.out.println("init() - config" + config.getInitParameter("configFile"));
+		String configFile =config.getInitParameter("configFile");
+		try (InputStream is = config.getServletContext().getResourceAsStream(configFile)) {
+			Properties props = new Properties();
+			props.load(is);
+
+			System.out.println("props>>" + props);
+			for(Entry<Object, Object> entry: props.entrySet()) {
+				System.out.println("KEY>>>"+entry.getKey()+":"+"value>>>"+entry.getValue());
+				Class<?> cls = Class.forName((String)entry.getValue());
+				Action action = (Action)cls.newInstance();
+				actionMap.put((String)entry.getKey(), action);
+			}
+			//확인
+			for(Entry<String, Action> entry :actionMap.entrySet()) {
+				System.out.println("KEY>>>"+entry.getKey()+":"+"value>>>"+entry.getValue());
+			}
+		}catch (IOException|ClassNotFoundException|InstantiationException|IllegalAccessException e) {
+			// TODO: handle exception
+		} 
+
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -49,7 +76,11 @@ public class BoardFrontController extends HttpServlet {
 
 		ActionForward forward = null;
 		Action action = null;
-
+		
+		//커멘트패턴 적용
+		action = actionMap.get(command);
+		forward = action.execute(request, response);
+/*		
 		if (command.equals("/boardWriteForm.do")) {
 			action = new BoardWriteFormAction();
 			try {
@@ -132,7 +163,7 @@ public class BoardFrontController extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
-
+*/
 		if (forward != null) {
 			if (forward.isRedirect()) {
 				response.sendRedirect(forward.getPath());
