@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import board_proj.action.Action;
+import board_proj.action.NullAction;
 import board_proj.dto.ActionForward;
 
 @WebServlet(urlPatterns = { "*.do" }, loadOnStartup = 1, // 무조건 처음 실행
@@ -36,19 +37,24 @@ public class BoardFrontController extends HttpServlet {
 		try (InputStream is = config.getServletContext().getResourceAsStream(configFile)) {
 			Properties props = new Properties();
 			props.load(is);
-
+			Action action =null;
 			System.out.println("props>>" + props);
 			for(Entry<Object, Object> entry: props.entrySet()) {
-				System.out.println("KEY>>>"+entry.getKey()+":"+"value>>>"+entry.getValue());
-				Class<?> cls = Class.forName((String)entry.getValue());
-				Action action = (Action)cls.newInstance();
+				try {
+					System.out.println("KEY>>>"+entry.getKey()+":"+"value>>>"+entry.getValue());
+					Class<?> cls = Class.forName((String)entry.getValue());
+					action = (Action)cls.newInstance();
+				} catch (ClassNotFoundException e) {
+					action = new NullAction();
+					e.printStackTrace();
+				}
 				actionMap.put((String)entry.getKey(), action);
 			}
 			//확인
 			for(Entry<String, Action> entry :actionMap.entrySet()) {
 				System.out.println("KEY>>>"+entry.getKey()+":"+"value>>>"+entry.getValue());
 			}
-		}catch (IOException|ClassNotFoundException|InstantiationException|IllegalAccessException e) {
+		}catch (IOException|InstantiationException|IllegalAccessException e) {
 			// TODO: handle exception
 		} 
 
